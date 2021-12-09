@@ -14,14 +14,15 @@ namespace myapp.MVVM.Model
     class Client
     {
         public string Username { get; set; }
+        public Guid UID { get; set; }
         public TcpClient Clientsocket { get; set; }
 
         PacketReader _packetReader;
         PacketBuilder _packetBuilder;
         public Client(TcpClient client)
         {
-   
             Clientsocket = client;
+            UID = Guid.NewGuid();
             _packetReader = new PacketReader(Clientsocket.GetStream());
             var opcode = _packetReader.ReadByte();
             Username = _packetReader.ReadMessage();            
@@ -40,18 +41,13 @@ namespace myapp.MVVM.Model
                     switch (opcode)
                     {
                         case 2:
-                            //send to MAINWINDOW A DECLINE OR ACCEPT
-                            Debug.WriteLine("Hej du kom till 2");
-                            
                             break;
                         case 5:
                             var msg = _packetReader.ReadMessage();
-                            Debug.WriteLine($"Msgrecieved: {msg}");
                             Program.BroadcastMessage($"[{DateTime.Now}]: [{Username}]: {msg}");
                             break;
                         case 15:
-                            Debug.WriteLine("Buzz sent");
-                            Program.BroadcastBuzz( $"{Username}");
+                            Program.BroadcastBuzz( UID.ToString());
                             break;
                         default:
                             break;
@@ -59,13 +55,10 @@ namespace myapp.MVVM.Model
                 }
 
                 catch (Exception ex)
-                {
-                    if (ex is IOException)
-                    {
-                        Program.BroadcastDisconnect(Username);
-                    }
-                    Debug.WriteLine(ex.ToString());
-                    Debug.WriteLine($"{Username} Disconnected!");              
+                {   
+                    Program.BroadcastDisconnect(UID.ToString());
+                    Clientsocket.Close();
+                    Debug.WriteLine(ex.ToString());         
                     break;
                 }
             }

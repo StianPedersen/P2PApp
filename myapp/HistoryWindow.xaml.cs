@@ -23,5 +23,12 @@ namespace myapp
         {
             InitializeComponent();
         }
+        void ListViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+
+            
+                MessageBox.Show("Title" + " is available.");
+            
+        }
     }
 }

@@ -144,8 +144,14 @@ namespace myapp.MVVM.ViewModel
         }
         private void UserConnected()
         {
-            var user = new UserModel { Username = _server.PacketReader.ReadMessage()};
-            Application.Current.Dispatcher.Invoke(() => Users.Add(user));
+            
+            var newuser = new UserModel { Username = _server.PacketReader.ReadMessage(), UID = _server.PacketReader.ReadMessage() };
+            
+           if(!Users.Any(x => x.UID == newuser.UID))
+            {
+                Application.Current.Dispatcher.Invoke(() => Users.Add(newuser));
+
+            }
         }
         private void MessageRecieved()
         {
@@ -160,13 +166,15 @@ namespace myapp.MVVM.ViewModel
         }
         private void ShakeScreen()
         {
-            //Width += 50;
+            System.Media.SystemSounds.Asterisk.Play();
         }
         private void RemoveUser()
         {
-            var usrname = _server.PacketReader.ReadMessage();
-            var user = Users.Where(x => x.Username == usrname).FirstOrDefault();
+            var uid = _server.PacketReader.ReadMessage();
+            var user = Users.Where(x => x.UID == uid).FirstOrDefault();
             Application.Current.Dispatcher.Invoke(() => Users.Remove(user));
+            
+
         }
         private void OnCreateServerCommand(object CommandParameter)
         {
@@ -187,16 +195,17 @@ namespace myapp.MVVM.ViewModel
         private void SaveChat()
         {
            
-                XmlSerializer serializer = new XmlSerializer(typeof(ObservableCollection<string>));
+
                 Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "ChatHistory"));
                 string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                string filename = $@"{DateTime.Now.Ticks}.xml";
-                int i = 0;
+                var dateAndTime = DateTime.Now;
+                var date = dateAndTime.ToString("yyyyMMddHHmmss");
+                string filename = $@"{date}.xml";
+                
+                
             
                     using (var sw = new StreamWriter(Path.Combine(docPath, "ChatHistory", filename)))
-                        {
-                
-    
+                        {    
                             foreach (string line in Messages)
                             {
                                 sw.WriteLine(line);

@@ -30,35 +30,40 @@ namespace myapp.MVVM.Model
 
                     _users.Add(client);
                     accept = (bool)acceptEvent?.Invoke();
-                    Debug.WriteLine(accept);
                     if (accept)
                     {
-                        BroadcastConnection();
-                        BroadcastMessage($"{client.Username} Connected");
+                        BroadcastConnection(client.Username);
+                        BroadcastMessage($"{client.Username} connected");
                     }
                     else
                     {
-                    BroadcastMessage($"{client.Username} was rejected!");
-                    BroadcastDisconnect(client.Username);
-
-                    }
+                        BroadcastMessage($"{client.Username} was rejected!");
+                        BroadcastRejection(client.Username);
+                    
+                    
+                }
 
                 }
             
           
         }
 
-        public void BroadcastConnection()
+        public void BroadcastConnection(string name)
         {
             foreach(var user in _users)
             {
-                foreach(var usr in _users)
-                {
-                    var broadcastpacket = new PacketBuilder();
-                    broadcastpacket.WriteOpCode(1);
-                    broadcastpacket.WriteMessage(usr.Username);
-                    user.Clientsocket.Client.Send(broadcastpacket.GetPacketBytes());
-                }
+                
+                    foreach (var usr in _users)
+                    {
+
+                        var broadcastpacket = new PacketBuilder();
+                        broadcastpacket.WriteOpCode(1);
+                        broadcastpacket.WriteMessage(usr.Username);
+                        broadcastpacket.WriteMessage(usr.UID.ToString());
+                        user.Clientsocket.Client.Send(broadcastpacket.GetPacketBytes());
+
+                    }
+                
             }
         }
 
@@ -78,26 +83,39 @@ namespace myapp.MVVM.Model
             }
         }
 
-        public static void BroadcastDisconnect(string username)
+        public static void BroadcastDisconnect(string uid)
         {
-            var disconnect = _users.Where(x => x.Username == username).FirstOrDefault();
+            var disconnect = _users.Where(x => x.UID.ToString() == uid).FirstOrDefault();
+
             _users.Remove(disconnect);
             
                 foreach (var user in _users)
                 {
                     var broadcastPacket = new PacketBuilder();
                     broadcastPacket.WriteOpCode(10);
-                    broadcastPacket.WriteMessage(username);
+                    broadcastPacket.WriteMessage(uid);
                     user.Clientsocket.Client.Send(broadcastPacket.GetPacketBytes());
                 }
-                BroadcastMessage($"{disconnect.Username} Disconnected!");
+                BroadcastMessage($"{disconnect.Username} disconnected!");
         }
-        public static void BroadcastBuzz(string name)
+
+        public static void BroadcastRejection(string username)
         {
-            BroadcastMessage($"{name} sent a buzz");
+            var disconnect = _users.Where(x => x.Username == username).FirstOrDefault();
+            _users.Remove(disconnect);
+            var broadcastPacket = new PacketBuilder();
+            broadcastPacket.WriteOpCode(20);
+            disconnect.Clientsocket.Client.Send(broadcastPacket.GetPacketBytes());
+        }
+
+        public static void BroadcastBuzz(string uid)
+        {
+            var name = _users.Where(x => x.UID.ToString() == uid).FirstOrDefault();
+
+            BroadcastMessage($"{name.Username} sent a buzz!");
             foreach (var user in _users)
             {
-                if (user.Username != name)
+                if (user.UID.ToString() != uid)
                 {
                     var msgPacket = new PacketBuilder();
                     msgPacket.WriteOpCode(15);

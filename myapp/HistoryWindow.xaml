@@ -5,17 +5,26 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:myapp" xmlns:viewmodel="clr-namespace:myapp.MVVM.ViewModel"
         mc:Ignorable="d"
-        Title="HistoryWindow" Height="450" Width="800">
+        Title="HistoryWindow" Height="650" Width="1200">
     <Window.DataContext>
         <viewmodel:HistoryViewModel/>
     </Window.DataContext>
+
     <Grid>
         <Grid Margin="0,0,642,0">
-
-            <ListView ItemsSource="{Binding History}" BorderThickness="0" Margin="8,0,0,0" Grid.Row="1">
-
-            </ListView>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="84*"/>
+                <ColumnDefinition Width="33*"/>
+                <ColumnDefinition Width="41*"/>
+            </Grid.ColumnDefinitions>
+            <ListBox ItemsSource="{Binding History}" SelectedItem="{Binding ChosenFile}" Margin="0,60,86,0"/>
             
-    </Grid>
+        </Grid>
+
+        <TextBlock TextWrapping="Wrap" Text="{Binding ChosenFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="225,32,280,23"/>
+        <TextBox TextWrapping="Wrap" Text="{Binding SearchWord, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="951,5,10,572"/>
+        <Button Content="Search" Command="{Binding SearchCommand}" Margin="951,62,5,520"/>
+        <TextBlock TextWrapping="Wrap" Margin="0,0,980,571"><Run Language="sv-se" Text="All Files"/></TextBlock>
+        <ListBox ItemsSource="{Binding SearchedHistory}" SelectedItem="{Binding ChosenFile}" Margin="951,114,0,0"/>
     </Grid>
 </Window>
