@@ -10,9 +10,7 @@ using System.Windows.Input;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Linq;
-using System.Threading;
-using System.Xml.Serialization;
-using System.Reflection;
+
 
 namespace myapp.MVVM.ViewModel
 {
@@ -25,6 +23,7 @@ namespace myapp.MVVM.ViewModel
         
         private Server _server;
         private Program _listener;
+        private SaveChat _saveChat;
 
         private readonly DelegateCommand _createServerCommand;
         public ICommand CreateServerCommand => _createServerCommand;
@@ -109,6 +108,7 @@ namespace myapp.MVVM.ViewModel
             Users = new ObservableCollection<UserModel> ();
             Messages = new ObservableCollection<string>();
             _server = new Server();
+            _saveChat = new SaveChat();
             
             _server.connectedEvent += UserConnected;
             _server.msgRecievedEvent += MessageRecieved;
@@ -129,10 +129,8 @@ namespace myapp.MVVM.ViewModel
         {
             string message = "CONNECT?";
             string caption = "ACCEPT CONNECTION";
-           
-
             // Displays the MessageBox.
-
+            // Kan köras await!
             var result = MessageBox.Show(message, caption, MessageBoxButton.YesNo);
 
             if (result == System.Windows.MessageBoxResult.Yes)
@@ -192,27 +190,12 @@ namespace myapp.MVVM.ViewModel
             
            
         }
+
+
+        //Shyffla ut
         private void SaveChat()
         {
-           
-
-                Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "ChatHistory"));
-                string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                var dateAndTime = DateTime.Now;
-                var date = dateAndTime.ToString("yyyyMMddHHmmss");
-                string filename = $@"{date}.xml";
-                
-                
-            
-                    using (var sw = new StreamWriter(Path.Combine(docPath, "ChatHistory", filename)))
-                        {    
-                            foreach (string line in Messages)
-                            {
-                                sw.WriteLine(line);
-                            }
-                        }
-
-            
+                _saveChat.SaveChatFunction(Messages);         
         }
 
         private void ShowHistory()

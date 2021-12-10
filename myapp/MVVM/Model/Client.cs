@@ -30,12 +30,14 @@ namespace myapp.MVVM.Model
             Task.Run(() => Process());
         }
 
-        void Process()
+        //ASYNC
+        async void Process()
         {
             while(true)
             {
                 try
                 {
+                    //AWAIT
                     var opcode = _packetReader.ReadByte();
                     
                     switch (opcode)
@@ -43,7 +45,8 @@ namespace myapp.MVVM.Model
                         case 2:
                             break;
                         case 5:
-                            var msg = _packetReader.ReadMessage();
+                            //AWAIT
+                            var msg =  _packetReader.ReadMessage();
                             Program.BroadcastMessage($"[{DateTime.Now}]: [{Username}]: {msg}");
                             break;
                         case 15:

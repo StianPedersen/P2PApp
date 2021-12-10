@@ -78,6 +78,7 @@ namespace myapp.MVVM.ViewModel
             String strPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "ChatHistory");
             String search = SearchWord;
 
+            //LINQ
             var files = from file in Directory.GetFiles(strPath, "*", SearchOption.AllDirectories)
                         where File.ReadAllLines(file).Any(x => x.Contains("[" + search))
                         select file;

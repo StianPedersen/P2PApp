@@ -11,8 +11,9 @@ namespace myapp.MVVM.Model
 {
     class Program
     {
-         static List<Client> _users;
-         TcpListener _listener;
+        static List<Client> _users;
+        TcpListener _listener;
+        
         public event Func<bool> acceptEvent;
         public bool accept;
         
@@ -66,10 +67,6 @@ namespace myapp.MVVM.Model
                 
             }
         }
-
-       
-
-
         public static void BroadcastMessage(string message)
         {
             foreach (var user in _users)
