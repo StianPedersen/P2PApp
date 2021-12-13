@@ -83,9 +83,10 @@ namespace myapp.MVVM.Model
         public static void BroadcastDisconnect(string uid)
         {
             var disconnect = _users.Where(x => x.UID.ToString() == uid).FirstOrDefault();
-
-            _users.Remove(disconnect);
-            
+               
+ 
+                _users.Remove(disconnect);
+          
                 foreach (var user in _users)
                 {
                     var broadcastPacket = new PacketBuilder();
@@ -93,7 +94,11 @@ namespace myapp.MVVM.Model
                     broadcastPacket.WriteMessage(uid);
                     user.Clientsocket.Client.Send(broadcastPacket.GetPacketBytes());
                 }
+           
                 BroadcastMessage($"{disconnect.Username} disconnected!");
+            
+
+
         }
 
         public static void BroadcastRejection(string username)
@@ -108,8 +113,10 @@ namespace myapp.MVVM.Model
         public static void BroadcastBuzz(string uid)
         {
             var name = _users.Where(x => x.UID.ToString() == uid).FirstOrDefault();
-
-            BroadcastMessage($"{name.Username} sent a buzz!");
+            if(name != null)
+            {
+                BroadcastMessage($"{name.Username} sent a buzz!");
+            }
             foreach (var user in _users)
             {
                 if (user.UID.ToString() != uid)

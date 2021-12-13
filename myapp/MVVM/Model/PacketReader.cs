@@ -15,14 +15,14 @@ namespace myapp.MVVM.Model
         {
             _ns = ns;
         }
-        public string ReadMessage()
+        public async Task<string> ReadMessage()
         {
             byte[] msgbuffer;
-            var length = ReadInt32();
+            var length =  ReadInt32();
             msgbuffer = new byte[length];
-            _ns.Read(msgbuffer, 0, length); 
-
+            await _ns.ReadAsync(msgbuffer, 0, length); 
             return Encoding.ASCII.GetString(msgbuffer);
         }
+        
     }
 }

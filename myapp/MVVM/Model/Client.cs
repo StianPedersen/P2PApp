@@ -23,30 +23,25 @@ namespace myapp.MVVM.Model
         {
             Clientsocket = client;
             UID = Guid.NewGuid();
-            _packetReader = new PacketReader(Clientsocket.GetStream());
-            var opcode = _packetReader.ReadByte();
-            Username = _packetReader.ReadMessage();            
-            Debug.WriteLine($"Client: {Username} {opcode.ToString()}");
+            _packetReader = new PacketReader(Clientsocket.GetStream());        
             Task.Run(() => Process());
         }
-
-        //ASYNC
-        async void Process()
+        public async void Process()
         {
-            while(true)
+            var opcode = _packetReader.ReadByte();
+            Username = await _packetReader.ReadMessage();
+            while (true)
             {
                 try
                 {
-                    //AWAIT
-                    var opcode = _packetReader.ReadByte();
-                    
+                    opcode =  _packetReader.ReadByte();
+
                     switch (opcode)
                     {
                         case 2:
                             break;
                         case 5:
-                            //AWAIT
-                            var msg =  _packetReader.ReadMessage();
+                            var msg = await _packetReader.ReadMessage();
                             Program.BroadcastMessage($"[{DateTime.Now}]: [{Username}]: {msg}");
                             break;
                         case 15:

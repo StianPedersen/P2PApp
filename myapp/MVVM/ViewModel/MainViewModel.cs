@@ -125,35 +125,35 @@ namespace myapp.MVVM.ViewModel
           
         }
 
-        private bool AcceptConnection()
+        private  bool AcceptConnection()
         {
             string message = "CONNECT?";
             string caption = "ACCEPT CONNECTION";
-            // Displays the MessageBox.
-            // Kan köras await!
-            var result = MessageBox.Show(message, caption, MessageBoxButton.YesNo);
+     
+            var result =  MessageBox.Show(message, caption, MessageBoxButton.YesNo);
 
             if (result == System.Windows.MessageBoxResult.Yes)
             {
-                // Closes the parent form.
                 return true;
             }
             return false;
         }
-        private void UserConnected()
+
+        private async void UserConnected()
         {
             
-            var newuser = new UserModel { Username = _server.PacketReader.ReadMessage(), UID = _server.PacketReader.ReadMessage() };
+            var newuser = new UserModel { Username = await _server.PacketReader.ReadMessage(), UID =await  _server.PacketReader.ReadMessage() };
             
            if(!Users.Any(x => x.UID == newuser.UID))
             {
                 Application.Current.Dispatcher.Invoke(() => Users.Add(newuser));
 
+
             }
         }
-        private void MessageRecieved()
+        private async void MessageRecieved()
         {
-            var msg = _server.PacketReader.ReadMessage();
+            var msg = await _server.PacketReader.ReadMessage();
             Application.Current.Dispatcher.Invoke(() => Messages.Add(msg));
 
 
@@ -166,9 +166,9 @@ namespace myapp.MVVM.ViewModel
         {
             System.Media.SystemSounds.Asterisk.Play();
         }
-        private void RemoveUser()
+        private async void RemoveUser()
         {
-            var uid = _server.PacketReader.ReadMessage();
+            var uid =await _server.PacketReader.ReadMessage();
             var user = Users.Where(x => x.UID == uid).FirstOrDefault();
             Application.Current.Dispatcher.Invoke(() => Users.Remove(user));
             
@@ -191,8 +191,6 @@ namespace myapp.MVVM.ViewModel
            
         }
 
-
-        //Shyffla ut
         private void SaveChat()
         {
                 _saveChat.SaveChatFunction(Messages);         

@@ -17,11 +17,11 @@ namespace myapp.MVVM.Model
                 _ms.WriteByte(opcode);
                 
             }
-            public void WriteMessage(string message)
+            public async void WriteMessage(string message)
             {
                 var messageLength = message.Length;
-                _ms.Write(BitConverter.GetBytes(messageLength));
-                _ms.Write(Encoding.ASCII.GetBytes(message));
+                await _ms.WriteAsync(BitConverter.GetBytes(messageLength));
+                await _ms.WriteAsync(Encoding.ASCII.GetBytes(message));
             }
 
             public byte[] GetPacketBytes()
