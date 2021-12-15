@@ -25,6 +25,7 @@
         <TextBox TextWrapping="Wrap" Text="{Binding SearchWord, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="951,5,10,572"/>
         <Button Content="Search" Command="{Binding SearchCommand}" Margin="951,62,5,520"/>
         <TextBlock TextWrapping="Wrap" Margin="0,0,980,571"><Run Language="sv-se" Text="All Files"/></TextBlock>
-        <ListBox ItemsSource="{Binding SearchedHistory}" SelectedItem="{Binding ChosenFile}" Margin="951,114,0,0"/>
+        <ListBox ItemsSource="{Binding SearchedHistory}" SelectedItem="{Binding ChosenFile}" Margin="941,119,10,-5"/>
+    
     </Grid>
 </Window>

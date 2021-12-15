@@ -1,13 +1,12 @@
 ﻿using myapp.Core;
+using myapp.MVVM.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
+
 
 namespace myapp.MVVM.ViewModel
 {
@@ -15,9 +14,17 @@ namespace myapp.MVVM.ViewModel
     class HistoryViewModel : ObservableObject
     {
         public ObservableCollection<string> History { get; set; }
-        public ObservableCollection<string> SearchedHistory { get; set; }
 
-        public RelayCommand SearchCommand { get; set; }
+
+        public ObservableCollection<string> SearchedHistory {
+            get; set; }
+
+        public RelayCommand SearchCommand
+        {
+            get;
+            set;
+        }
+        FileHandler _fileHandler;
         private string _chosenFile = "";
         public string ChosenFile
         {
@@ -25,11 +32,9 @@ namespace myapp.MVVM.ViewModel
             set
             {
                 var filename = value;
-                //DirectoryInfo d = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "ChatHistory"));
                 if (value != null)
                 {
-                    filename = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "ChatHistory", value);
-
+                    filename = _fileHandler.get_file(value);
                     string xmlString = System.IO.File.ReadAllText(filename);
                     _chosenFile = xmlString;
                     OnPropertyChanged();
@@ -51,46 +56,35 @@ namespace myapp.MVVM.ViewModel
 
         public HistoryViewModel()
         {
+            _fileHandler = new FileHandler();
             History = new ObservableCollection<string>();
             SearchedHistory = new ObservableCollection<string>();
+            History = _fileHandler.find_history();
+         
+
+
             SearchCommand = new RelayCommand(o => find_files());
-            init_history();    
-            
-     
-        }
-        public void init_history()
-        {
-            DirectoryInfo d = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "ChatHistory")); //Assuming Test is your Folder
 
-            FileInfo[] Files = d.GetFiles("*.xml"); //Getting Text files
-            string str = "";
-            
-            foreach (FileInfo file in Files)
-            {
-                str = str + ", " + file.Name;
-                History.Add(file.Name);
-            }
-        }
 
+        }
         public void find_files()
         {
-            //SearchWord = "something";
-            String strPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "ChatHistory");
+
+            String strPath = _fileHandler.get_strPath();
             String search = SearchWord;
 
-            //LINQ
-            var files = from file in Directory.GetFiles(strPath, "*", SearchOption.AllDirectories)
-                        where File.ReadAllLines(file).Any(x => x.Contains("[" + search))
-                        select file;
+
+            var files = _fileHandler.get_file_linq(strPath, search);
             string filename;
             SearchedHistory.Clear();
             foreach (var file in files)
             {
-                filename = Path.GetFileNameWithoutExtension(file);
+                filename = _fileHandler.get_file_without_extension(file);
                 filename = filename + ".xml";
                 SearchedHistory.Add(filename);
             }
         }
+
 
     }
 }
